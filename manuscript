@@ -1,0 +1,243 @@
+Robust multi-label feature selection with shared label enhancement
+Abstract
+In real-world applications, multi-label feature selection has been widely attract considerable attention due to the importance of multi-label data. However, previous methods do not fully consider the relationship between the feature set and the multi-label set but devote attention to either of them. In addition, the existence of irrelevant and redundant information in the feature set and the multi-label set makes previous methods obtain inaccurate results. Moreover, traditional multi-label learning utilizes logical labels to estimate the relevance between the feature set and the label set so that the importance of labels can not be well-reflected. To deal with these issues, we propose a novel robust multi-label feature selection method named RLEFS in this paper. RLEFS utilizes a shared space by mapping patterns to excavate semantic similarity structure in features and labels. Besides, we reconstruct the label space to obtain numerical labels by a label enhancement regularization term during mining semantic similarity structure process. Furthermore, the local and global structures are considered to ensure effective information can be captured as fully as possible during feature selection process. Finally, we integrate the above terms into one joint learning framework, and then a simple yet effective optimization method with provable convergence is proposed to solve the above problems. Experimental results on multiple data sets show that the superiority of the proposed method. 
+Introduction
+  In real-world applications, numerous learning methods are confronting great challenges with the increase of high-dimensional data, these data lead to the curse of dimensionality as well. To deal with these issues caused by high-dimensional data, feature selection is designed to reduce the number of irrelevant and redundant features, excavate useful information, improve the classification performance of models simultaneously []. In light of these, feature selection is used in many domains, such as communications-electronics, biomedical, computational chemistry, etc.
+Recent years, a large number of researches regarding feature selection methods are proposed. Generally, feature selection methods are categorized into several main types based on the selection strategy: filter model, wrapper model, and sparse coding based model (a.k.a. embedded model). Filter model is independent of the learning model while wrapper model is dependent the learning model. Therefore, the computation cost of wrapper model is higher than that of filter model. In addition, sparse coding based model utilizes the advantages of the former two models to embed both feature selection and the subsequent learning model into a unified framework. We focus on sparse coding based model for feature selection in this paper.
+  In the early stage, researchers deal with binary or/and multi-class label data by previous methods. However, with the explosive growth of data, the new emerging multi-label data degenerate the performance of the previous methods. Thus, numerous multi-label learning methods are proposed to handle multi-label data. Most of the existing multi-label learning methods only consider either the feature set or the multi-label set. However, the relationship between them is not considered adequately. We know that the latent structures between feature set and label set is consistent []. Therefore, a shared subspace between them is achieved by mapping patterns to capture the useful semantic similarity structure. Besides, there are a lot of noise information in the feature set and label set. Ignoring noise information will construct an inaccurate subspace so that inaccurate label correlations are captured. Furthermore, noise information also degrades the performance of feature selection model. To this end, we introduce a structured sparsity norm---L2,1-norm that has been demonstrated to be robust to noise [RFS]. We impose this norm onto both feature set term and label set term simultaneously. In addition, traditional multi-label feature selection methods utilize logical labels to estimate the relevance between the feature set and label set. However, the importance of each label is different in real-world multi-label data. Hence, the importance of labels can not be well-reflected by logical values. To deal with this problem, we design a label enhancement term to reconstruct label set from logical label set to numeric label set, so that we can enhance the performance of feature selection by numerical labels during mining semantic similarity structure process. From the instance-level perspective, the local and global structure can provide complementary information to improve multi-label learning according to previous literature []. In our method, we exploit local and global structures from the label-level perspective simultaneously. 
+In light of the above analysis, we propose a novel multi-label feature selection method that integrates the above various terms into one joint learning framework. This joint learning framework is named Robust multi-label Feature Selection with shared Label Enhancement (RLEFS). And then, a simple yet effective optimization method with provable convergence is proposed to solve the above problems.
+In summary, the novelties and contributions of this paper are highlighted as follows:
+1.Extracting the shared space from feature space and label space by double mapping patterns to capture the useful semantic similarity structure.
+2.Reconstructing label set from logical label set to numeric label set by designing a label enhancement term.
+3.Imposing structured sparsity norm onto both feature set term and label set term simultaneously, to ensure the model is not disturbed by noise.
+4.Combining local and global structure of labels to provide complementary information so as to improve the performance of multi-label feature selection.
+5.Designing a joint learning framework that named Robust multi-label Feature Selection with shared Label Enhancement (RLEFS).
+6.Developing an optimization method with provable convergence to solve the proposed RLEFS framework.
+7.Conducting comprehensively evaluation criteria on multiple benchmark data sets to demonstrate the effectiveness of the proposed framework.
+
+  The remainder of the paper is organized as follows. In Section 2, we review some main related works, such as multi-label learning, feature selection methods and learning regularizer, etc. In Sections 3 and 4, we propose a joint learning framework that is named RLEFS and its optimization method with provable convergence respectively. In Section 5, the comprehensively experimental results on multiple multi-label data sets are described. At the same time, we analyze these results to verify the effectiveness and efficiency of the proposed RLEFS. Finally, some concluding remarks and future work are given in Section 6. 
+Related work
+Preliminaries
+  In this subsection, some definitions of the notations used are introduced. Matrices are denoted by italicized uppercase letters, such as A. For matrix ,  and  denote i-th row and j-th column of A. In addition, vectors can be also denoted by rows or columns of the matrix, or bold italicized lowercase letters, such as a. Scalars are denoted by lowercase letters, such as a. Functions can be represented by calligraphic letters.  and  denote the transpose and the trace of A respectively, where A in Tr(A) is a square matrix. The Frobenius norm of A is defined as . The L2,1-norm of A is defined as , where  denotes the (i, j)-th entry of matrix A. In this paper, we suppose that the feature matrix  has n instances in d-dimensional space. The label matrix  has c column class labels. Generally, the value of  is 1 if the i-th instance is related with the j-th label, and  as 0 otherwise.
+Related work 
+  In this subsection, we review some related works, such as multi-label learning, feature selection methods and several regularizers, etc.
+  In the past decade, many well-established multi-label learning methods have been widely applied to different fields. Generally, multi-label learning methods are categorized into three categories based on the label correlation strategy: first-order strategy, second-order strategy as well as high-order strategy []. In the first strategy, some researchers utilize single-label learning method to deal with multi-label data. This strategy ignores the label correlations, such as Binary Relevance (BR) []. In the second strategy, the pairwise label correlations have caused extensive concern. Calibrated Label Ranking (CLR) is a representative second-order method []. For the third strategy, the correlations of all labels or a subset of all labels are taken into account, such as LLSF-DL []. However, the last strategy consumes too much calculation cost and time cost. Consequently, we choose the second strategy to utilize label correlations. However, most of previous methods that adopt the above strategies assume the importance of labels are equivalent. That is, traditional multi-label learning utilizes logical labels to estimate the relevance between the feature set and label set so that the importance of labels can not be well-reflected. To this end, some researchers study how to transform logical labels into numerical labels for the importance of labels can be well-reflected [].
+  By investigating numerous literature [], we find that most multi-label feature selection methods are mainly divided into two categories: problem transformation and algorithm adaption. The former category is to transforms multi-label problem into several single-label problems, such as Pruned Problem Transformation (PPT) []. In order to improve the classification performance, Doquire et al propose PPT+MI that is a multi-label feature selection method based on PPT. Besides, PPT+CHI that uses  statistic method is developed to select the important features according to PPT as well. However, these above methods still may be lead to information loss of multi-label data. Consequently, algorithm adaption method is proposed. Next, we introduce some algorithm adaption methods.
+  We know that it is more difficult to excavate the useful information from multi-label data than from single-label data by traditional feature selection (problem transformation). In order to better excavate the useful information, researchers design many multi-label feature selection methods by different criteria that have been widely used in multi-label data applications, such as mutual-information-based and sparse-learning-based methods. We briefly review these criteria by several representative multi-label feature selection methods in this subsection. 
+  Jian et al propose a sparse-learning-based method named Multi-label Informed Feature Selection (MIFS). MIFS uses matrix factorization to obtain a low-rank latent label matrix that preserves the local geometrical structure of labels from the instance-level perspective. By the above operations, MIFS eliminates irrelevant and redundant information of label matrix. MIFS is constructed as follows:
+          (1)
+where  and  denote the feature matrix and the label matrix respectively. ,  and  are regarded as the weight matrix, the latent label matrix and the basis matrix respectively.  denotes Laplacian matrix. α, β and γ are three hyper-parameters of MIFS.
+  Besides, Cai et al also design a feature selection method based on the sparse theory. This method imposes L2,0-norm onto the weight matrix and then uses the Augmented Lagrangian Multiplier method to optimize the following objective function. It is named RALM-FS:
+                 (2)
+where X, Y and W have the same structure as X, Y and W of MIFS. b and 1 denote the bias term and the all-one-element vector respectively. k denotes the number of the selected features.
+  Alternatively, Lin et al design a multi-label feature selection method named Max-Dependency and Min-Redundancy (MDMR). This method utilizes feature dependency and feature redundancy to conduct feature selection. Besides, Zhang et al propose a novel multi-label feature selection method by using label redundancy (LRFS). LRFS considers a new feature relevance term based on the conditional mutual information. LRFS has the following form:
+               (3)
+where  and  is regarded as the relevance term and the redundancy term of features respectively.  denotes a candidate feature from the full feature set F.  and  are two labels from the full label set Y. To balance the magnitude between  and ,  is divided over the  of the selected feature subset S. Both MDMR and LRFS belong to multi-label feature selection methods based on mutual-information.
+  In addition, the various regularization term is used in numerous machine learning algorithms, such as local learning regularizer and sparsity regularizer. In local learning regularizer, an intuitive assumption is adopted, that is, if two data points  and  in a high-dimensional ambient space are close, then and  in a low-dimensional space should be similar. Generally, we use graph Laplacian that is a discrete Laplace operator to achieve the above assumption. The following calculation method is obtained:
+                         (4)
+where  denotes a graph Laplacian matrix of matrix X. S and A denote the symmetric affinity matrix and the degree matrix, respectively. For sparsity regularizer, it can lead to a global structured learning [] when we take the following form:
+                               (5)
+where , . This is similar to the above the result of (4), However, function (5) can preserve global structure by adjusting W.
+The proposed framework
+  In this section, we propose a novel robust multi-label feature selection method named RLEFS. RLEFS achieves a shared space by mapping patterns to excavate semantic similarity structure between features and labels. Besides, we reconstruct the label space to obtain numerical labels by label enhancement regularization term, local and global regularization term during mining semantic similarity structure process, which have provided excellent guidance for feature selection process.
+  Generally, the least square regression model is utilized to learn the weight matrix W. However, this model is very sensitive to noise. In order to make the model more robust, we impose L2,1-norm onto the learning model, where this norm has been confirmed to be robust to noise []. Therefore, the following learning model is given:
+                                (6)
+where  denotes the feature weight matrix which can measure the importance of each feature. That is, if the value of  is larger, then the i-th feature of matrix X has greater contribution. In addition, [] motivates us to consider the local geometric structure of label set from label-level perspective. It is vital to preserve the local structure of labels due to label correlations in multi-label data. Moreover, the weight matrix W is a mapping matrix from a high-dimension feature space to low-dimension label space. If = 0 (1≤i≤d), then the i-th feature has no contribution for distinguishing the j-th label . Otherwise, it indicates the i-th feature has contribution to the j-th label. The larger the value is, the greater the contribution is. Thus, W can measure the relevance between labels by the following form:
+                       (7)
+We incorporate (7) into (6) to obtain the following function:
+                          (8)
+where L = A - S denotes a graph Laplacian matrix of label set. α is a trade-off parameter between loss function and label graph regularization term. In particular, we need to measure the correlations between X and Y by the weight matrix. However, traditional methods utilize logical labels to estimate the relevance between the feature set and label set so that the importance of labels can not be well-reflected. Therefore, we transform logical labels into numerical labels by a label enhancement regularization term during mining semantic similarity structure process. We obtain the following form:
+                  (9)
+where β denotes a regularization parameter that adjusts the contribution of the third term.  denotes a co-embedding space between the feature space and label space. Moreover, we use F to capture numerical labels of label matrix Y. This reconstruction process is similar to the construction of the shared subspace. However, F is not a low-dimensional embedding subspace for label matrix Y. Besides, we impose L2,1-norm onto both loss function and label enhancement regularization term so that the impact of outliers in feature set and label set can be reduced. Similar to the sparse regularizer mentioned in related work, the designed label enhancement regularization term can preserve the global structure as well. Hence, F in the third term is globally consistent with matrix Y, while F preserves local geometric structure by using the first two terms. Next, we impose L2,1-norm onto W, which ensures not only the row sparsity of W but also can automatically select features during the multi-label learning. Therefore, we reformulate the following function:
+             (10)
+where γ denotes a regularization parameter that controls the sparsity of the objective function. However, the row-sparse property of W is not always guaranteed by L2,1-norm [Robust Joint Feature Weights Learning Framework]. Consequently, we impose the non-negative constraint on W so that the row-sparse property is further enhanced. We also apply non-negative constraints onto F and B, which can ensure the consistency of F and Y, because Y has only non-negative logical values, 0 and 1. Note that, if the elements of F are zero, the above function always leads to a trivial solution. Consequently, we impose an orthogonality constraint on F. This orthogonal constraint can ensure the minimum redundancy as well. Therefore, the final objective function is reformulated as follows:
+
+                         (11)
+Next, we develop a simple yet effective optimization method for our objective function, to guarantee the convergence of function (11). This optimization method with provable convergence will be described in detail in the next section.
+Optimization of RLEFS model
+Optimization Schemes
+In this section, we propose an efficient optimization method to solve the proposed objective function in Section 3. we observe that the objective function (11) is joint not-convex. That is, the Hessian matrix that is composed of the second partial derivative of the multivariate function is not a positive semi-definite matrix. In addition, the objective function is non-smooth due to L2,1-norm. To solve these problems, we transform the objective function into several sub-solution processes, that is, a variable is updated and other variables are fixed. At the same time, a relaxed approach is introduced to solve the non-smooth problem. Therefore, the objective function (11) is equivalent to as follows:
+
+s.t.                             (12)
+where  denotes the objective function (12) with respect to variables W, F and B. D1, D2 and D3 are defined as follows:
+                         (13)
+where  and  denote the i-th diagonal element of  and  respectively.  is a non-negative small constant. By integrating non-negative and orthogonal constraints into function (12), we obtain the following Lagrangian function:
+   (14)
+where ,  and  denote the Lagrangian multiplier.denotes the regularization parameter of orthogonal constraint. By taking the derivative of function (14) w.r.t W, F and B respectively, we obtain:
+   (15)
+We know that ,  and  according to Karush-Kuhn-Tucker conditions. Therefore, we get the following functions:
+          (16)
+According to the above functions, we obtain the following update rules:
+                 (17)
+where t denotes the counter. L is a graph Laplacian matrix with mixed sign, thus we decompose L into two non-negative parts, i.e., L= A-S. Besides, some elements in the denominator will become zero during the update process. To solve this issue, we add a very small constant to the denominator. Then, we obtain the top-k features during feature selection process. The pseudo-code of the proposed method is described in Algorithm 1.
+Algorithm 1  RLEFS
+Input:
+    The input feature matrix  and the output matrix ;
+    Regularization parameters α, β, γ and λ.
+Output:
+    Return the selected top-k selected features index set.
+1: Initialize ,  and  randomly;
+2: t = 0; 
+3: Compute the degree matrix A and the affinity matrix S of the label matrix Y;
+4: Repeat:
+5: Update the diagonal matrix D1, D2 and D3 by ;
+6: Update ;
+7: t = t + 1;
+8: Until Convergence criterion is satisfied;
+9: Sort all features by , where i=1,2,3,...,d, and select the top-k features.
+Proof of convergence
+In this subsection, we prove the convergence of the proposed optimization method. First, we introduce the conventional gradient descent method to deduce the updating rules in this paper. Then, the proposed optimization method is proved. Taking variable W as an example, we give the following formula:
+                           (18)
+where the learning rate  is a small positive constant. To ensure non-negative constraints and obtain a data-adaptive learning rate, we set:
+                      (19)
+We take (19) into (18), then the following result is obtained:
+
+                  (20)
+Accordingly, we can obtain the above update rule that is a special case of the gradient descent method. The convergence of the optimization method is proved below. First, some related concepts are given [].
+Definition 1. If  and  are satisfied, then  is considered to be an auxiliary function of .
+Lemma 1. If  is considered to be an auxiliary function of , then  is a non-increasing function according to:
+                           (21)
+Proof of Lemma 1: According to Definition 1 and function (21), we can deduce that:
+                    (22)
+where w denotes any elements of W. Next, we prove the convergence of RLEFS w.r.t. W by a proper auxiliary function . Considering that the update rule happen always on an element-by-element basis, we use  to denote the (i, j)-th element of W. And  denotes the part of , which is relevant to . Therefore, the first-order and second-order partial derivatives of  are obtained:
+                   (23)
+                        (24)
+According to the above process, we obtain the Taylor function of :
+            (25)
+Inspired by [],[], we set the following auxiliary function about :
+      (26)
+Proof: If  in (26), then . For another condition in Definition 1, we need to prove the following inequality:
+              (27)
+It is obvious that (27) is equivalent to the following form:
+        (28.a)
+         (28.b)
+Therefore,  is proved to be an auxiliary function of . This auxiliary function is brought into (21), then we obtain the update rule of W by :
+
+                        (29)
+Finally, we prove the convergence of the proposed optimization method. The converge proof of other variables (F and B) are similar to the above process. 
+Experimental study
+In this section, we use ten multi-label benchmark data sets and six state-of-the-art compared methods to conduct experiments, where all experiments are performed on a 3.4GHz Intel Core (TM) i7-6700 machine with 16 GB main memory.
+Experimental data sets
+  In our experiment, all data sets used are fetched from Mulan Library. We found that these data sets were adopted in numerous literature about multi-label learning []. Besides, these data sets are collected from different fields. For instance, the Enron data set is a subset of the Enron e-mail corpus [], which comes from text domain. Flags data set is collected from the image field, it has 194 instances and seven labels that contains red, green and blue, etc. Several data sets come from yahoo data sets that belong to multi-label text (web page) categorization. The detailed description of all the data sets is summarized in Table 1.
+Table 1. Description of data sets
+#Data sets	#instances	#Train	#Test	#Features	#Labels
+Arts	5000	2000	3000	462	26
+Education	5000	2000	3000	550	33
+Enron	1702	1123	579	1001	53
+Entertain	5000	2000	3000	640	21
+Flags	194	129	65	19	7
+Reference	5000	2000	3000	793	33
+Scene	2407	1211	1196	294	6
+Science	5000	2000	3000	743	40
+Social	5000	2000	3000	1047	39
+Society	5000	2000	3000	636	27
+Experimental settings
+  To comprehensively verify the classification performance of RLEFS, the following several classical and state-of-the-art feature selection methods are used as compared methods.
+1.PPT+MI []: it is a PPT-based multi-label feature selection method that belongs to problem transformation. 
+2.PPT+CHI []: it is a PPT-based multi-label feature selection method that uses  statistic to select optimal features from feature set.
+3.MIFS []: it is a sparse-learning-based multi-label feature selection method that decomposes the original label matrix into a low-dimensional label space.
+4.MDMR []: it is a multi-label feature selection method that utilizes max-dependency and min-redundancy to select the optimal feature subset.
+5.LRFS []: it is the latest mutual-information-based multi-label feature selection method that proposes a novel feature relevance term based on label redundancy.
+6.RALM-FS []: it uses the L2,0-norm regularization term to conduct feature selection based on sparse-learning.
+   To facilitate experiments, we set some parameters in advance. The heat-kernel function is adopted during structuring graph Laplacian matrix process, where the parameters  and  are set as 5 and 1 respectively. To ensure the fairness, the hyper-parameters of all methods are tuned in {0.01, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0}. We utilize the optimal parameters with respect to classification performance during the training process, where 5-fold cross-validation is adopted. Besides, a Binary Relevance model (BR) is used to transform multi-label data into binary classification data so that linear Support Vector Machine (SVM) and K-Nearest-Neighbors (KNN, K=3) can be used in our experiments, where C of SVM is tuned in {10-4, 10-3,..., 103, 104}. Next, we adopt Micro-F1 and Macro-F1 (a.k.a. Micro-average and Macro-average) based on F1-measure as evaluation criteria to evaluate the proposed method and other compared methods. Micro-F1 and Macro-F1 have the following form:
+                 (30)
+where m and i represent the number of class labels and the i-th label respectively. TP, FP and FN are composed by T, F, P and N, where T, F, P and N denote True, False, Positive and Negative respectively. Moreover, the larger both Micro-F1 (or Macro-F1), the better the performance of the method is. In addition, we give our experimental framework in Fig. 1. 
+
+Figure 1. Experimental framework
+Experimental results
+To evaluate the classification performance of the RLEFS method, we conduct numerous experiments on ten different multi-label data sets. The experiment results are described in some tables and figures. First, we use the top 20% of the total features in each data set to calculate the average result and standard deviations of different methods (all features of Flags are adopted since it only contains 19 features). 
+In Tables 2-5, we record the results of Macro-F1 and Micro-F1 of all the methods by using SVM and K-NN (K=3) classifier. The best results are represented by bold fonts in each row of tables. Moreover, the last row “Average” calculates the average values of all data sets under each feature selection method. Observing these tables, we conclude that the proposed RLEFS obtains the best result about the last row “Average”, where these best results are 0.177, 0.386, 0.200 and 0.401 in Table 2-5 respectively. Besides, RLEFS obtains the best results on most data sets used under all evaluation criteria, and it also obtains the suboptimal result on several data sets according to Tables 2-5. 
+ To better clearly show the classification performance of all compared methods. We use Figs. 2-5 to show the experimental results on six representative data sets, including Arts, Education, Enron, Flags, Reference and Science. In Figs. 2-5, The X-axis and Y-axis are used to indicate the already-selected features and the classification performance of corresponding evaluation criteria, respectively. The number of already-selected features is varied from top-1% to top-20% of all features, where the step size is set to 1%. As shown in Figs. 2-5, we observe that RLEFS achieves the best classification performance. In most cases, the classification performance of RLEFS increases first and then stabilizes based on we have observed. Overall, the proposed RLEFS method outperforms other compared methods in experiments.
+Table 2. The results of all methods in terms of Macro-F1 (mean±std.)
+Data set 	PPT+MI	PPT+CHI	MIFS	MDMR	LRFS	RALM-FS	RLEFS
+Flags	0.513±0.037	0.517±0.046	0.57±0.1	0.503±0.053	0.511±0.044	0.487±0.044	0.578±0.091
+Scene	0.163±0.098	0.199±0.114	0.295±0.127	0.406±0.092	0.394±0.104	0.463±0.165	0.43±0.163
+Enron	0.102±0.035	0.067±0.016	0.074±0.017	0.108±0.032	0.099±0.033	0.074±0.027	0.141±0.048
+Arts	0.037±0.022	0.04±0.023	0.055±0.034	0.039±0.022	0.043±0.019	0.039±0.026	0.09±0.033
+Education	0.034±0.025	0.034±0.026	0.019±0.017	0.035±0.025	0.048±0.028	0.052±0.014	0.068±0.02
+Entertain	0.072±0.033	0.078±0.044	0.097±0.047	0.077±0.032	0.079±0.031	0.081±0.038	0.13±0.047
+Reference	0.038±0.019	0.037±0.018	0.063±0.024	0.041±0.02	0.051±0.021	0.063±0.028	0.081±0.021
+Science	0.034±0.022	0.032±0.021	0.034±0.016	0.038±0.028	0.039±0.029	0.036±0.02	0.069±0.024
+Society	0.048±0.015	0.047±0.014	0.055±0.02	0.049±0.016	0.049±0.015	0.032±0.012	0.075±0.025
+Social	0.073±0.03	0.081±0.031	0.031±0.016	0.075±0.031	0.083±0.031	0.014±0.012	0.103±0.039
+Average	0.111	0.113	0.129	0.137	0.14	0.134	0.177
+
+Table 3. The results of all methods in terms of Micro-F1 (mean±std.)
+Data set 	PPT+MI	PPT+CHI	MIFS	MDMR	LRFS	RALM-FS	RLEFS
+Flags	0.665±0.04	0.663±0.038	0.722±0.05	0.649±0.043	0.666±0.04	0.631±0.048	0.719±0.046
+Scene	0.168±0.1	0.205±0.117	0.325±0.135	0.429±0.096	0.415±0.108	0.476±0.164	0.443±0.162
+Enron	0.47±0.043	0.353±0.019	0.372±0.027	0.474±0.049	0.446±0.056	0.389±0.059	0.525±0.043
+Arts	0.09±0.053	0.098±0.055	0.139±0.078	0.095±0.052	0.104±0.045	0.102±0.061	0.21±0.073
+Education	0.124±0.083	0.12±0.085	0.073±0.059	0.127±0.081	0.15±0.081	0.193±0.056	0.228±0.068
+Entertain	0.19±0.088	0.183±0.103	0.228±0.112	0.19±0.087	0.184±0.082	0.214±0.1	0.285±0.119
+Reference	0.348±0.077	0.355±0.074	0.359±0.105	0.356±0.069	0.377±0.066	0.404±0.132	0.418±0.108
+Science	0.115±0.059	0.11±0.055	0.129±0.057	0.127±0.074	0.129±0.078	0.097±0.054	0.194±0.071
+Society	0.316±0.033	0.317±0.032	0.3±0.042	0.319±0.017	0.321±0.016	0.223±0.059	0.336±0.067
+Social	0.47±0.097	0.445±0.108	0.276±0.136	0.465±0.106	0.465±0.119	0.149±0.112	0.498±0.142
+Average	0.296	0.285	0.292	0.323	0.326	0.288	0.386
+
+Table 4. The results of all methods in terms of Macro-F1 (mean±std.)
+Data set 	PPT+MI	PPT+CHI	MIFS	MDMR	LRFS	RALM-FS	RLEFS
+Flags	0.448±0.011	0.449±0.011	0.527±0.078	0.443±0.018	0.453±0.022	0.439±0.011	0.538±0.084
+Scene	0.348±0.069	0.368±0.072	0.498±0.086	0.555±0.075	0.547±0.082	0.581±0.108	0.541±0.117
+Enron	0.116±0.019	0.074±0.012	0.087±0.014	0.115±0.02	0.109±0.022	0.081±0.026	0.126±0.018
+Arts	0.088±0.022	0.091±0.022	0.095±0.033	0.095±0.025	0.101±0.025	0.071±0.025	0.114±0.032
+Education	0.082±0.019	0.083±0.022	0.043±0.018	0.082±0.019	0.087±0.02	0.084±0.023	0.089±0.021
+Entertain	0.147±0.019	0.151±0.022	0.138±0.042	0.148±0.018	0.145±0.02	0.131±0.04	0.172±0.043
+Reference	0.079±0.017	0.076±0.016	0.088±0.024	0.081±0.017	0.085±0.017	0.077±0.026	0.1±0.02
+Science	0.065±0.023	0.066±0.022	0.062±0.015	0.067±0.024	0.067±0.023	0.057±0.021	0.099±0.024
+Society	0.083±0.015	0.083±0.016	0.089±0.021	0.084±0.014	0.085±0.013	0.053±0.016	0.095±0.022
+Social	0.099±0.034	0.107±0.03	0.051±0.017	0.107±0.032	0.111±0.027	0.038±0.012	0.123±0.042
+Average	0.156	0.155	0.168	0.178	0.179	0.161	0.2
+
+Table 5. The results of all methods in terms of Micro-F1 (mean±std.)
+Data set 	PPT+MI	PPT+CHI	MIFS	MDMR	LRFS	RALM-FS	RLEFS
+Flags	0.615±0.011	0.615±0.011	0.662±0.03	0.611±0.017	0.616±0.018	0.606±0.012	0.672±0.036
+Scene	0.348±0.067	0.367±0.071	0.493±0.086	0.556±0.075	0.547±0.082	0.577±0.105	0.541±0.116
+Enron	0.454±0.013	0.345±0.026	0.41±0.024	0.443±0.044	0.419±0.048	0.365±0.073	0.474±0.041
+Arts	0.181±0.037	0.187±0.033	0.202±0.052	0.189±0.034	0.196±0.027	0.182±0.043	0.251±0.037
+Education	0.23±0.043	0.227±0.043	0.183±0.055	0.231±0.04	0.243±0.046	0.26±0.05	0.271±0.054
+Entertain	0.284±0.03	0.285±0.033	0.276±0.065	0.283±0.03	0.281±0.034	0.273±0.065	0.329±0.074
+Reference	0.373±0.044	0.366±0.04	0.382±0.055	0.378±0.044	0.386±0.046	0.386±0.089	0.427±0.059
+Science	0.162±0.028	0.162±0.026	0.171±0.037	0.174±0.034	0.177±0.035	0.16±0.048	0.228±0.04
+Society	0.317±0.023	0.317±0.026	0.305±0.043	0.312±0.032	0.315±0.028	0.255±0.05	0.328±0.041
+Social	0.451±0.052	0.442±0.055	0.338±0.081	0.451±0.058	0.455±0.054	0.315±0.054	0.491±0.081
+Average	0.342	0.331	0.342	0.363	0.364	0.338	0.401
+
+
+
+		
+		
+Figure 2. All compared methods on six data sets using SVM classifier in term of Macro-F1.
+
+		
+		
+Figure 3. All compared methods on six data sets using SVM classifier in term of Micro-F1.
+
+
+		
+		
+Figure 4. All compared methods on six data sets using 3NN classifier in term of Macro-F1.
+
+
+		
+		
+Figure 5. All compared methods on six data sets using 3NN classifier in term of Micro-F1.
+Sensitivity analysis of parameters
+Like many other methods, we study the sensitivity of parameters of RLEFS, where these parameters contain α, β, γ and λ. In this subsection, we take data set Arts as an experimental subject. First, these parameters are tuned in {0.01, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0}. If the traditional gird search is performed, it could be time-consuming due to four parameters in RLEFS. To this end, one parameter is tuned while the other three parameters are fixed, where we set the fixed parameters as 0.5 in this paper. We only use the analysis result of SVM classifier for convenience. From Fig. 6 (a)-(d), we observe that the classification performance is sensitive to the values of these parameters. However, RLEFS achieves better results in 0.3-0.7 in most cases. In addition, a more large candidate gird set can be employed in real-world applications to ensure satisfactory classification performance. 
+
+			
+(a)alpha	(b)beta
+			
+(c)gamma	(d)lambda
+Figure 6. Micro-average and Macro-average of RLEFS on Arts w.r.t all parameters (SVM classifier)
+Convergence and complexity analysis
+  To verify the convergence of the proposed RLEFS method, we use four benchmark data sets (Arts, Education, Enron and Science) to conduct convergence experiments. The results are shown in Fig. 7. We observe that RLEFS tends to converge in several iterations and then stable. We can also observe similar situations on other data sets. Afterward, the computational complexity of related methods are analyzed. Suppose one data set has n instances with q features, and it contains l labels. The number of already-selected features is recorded as k. The computation complexity of PPT+MI and PPT+CHI are O() and O() respectively. MDMR and LRFS are O(k(n-k)) and O(ql2+kq) respectively. MIFS requires O(cnq+n2) in each iteration. The computation complexity of RALM-FS is O(q3) when an inverse matrix (q*q) is calculated. The computation complexity of the proposed RLEFS is O(qn2+nq2) in each iteration. 
+
+			
+Figure 7. Convergence curves of the RLEFS
+Conclusions
+In this paper, we propose a joint multi-label feature selection framework RLEFS. RLEFS has the following several appealing characteristics. First, RLEFS utilizes a shared space by mapping patterns to excavate semantic similarity structure in features and labels. It can deal with the problem that previous methods only devote attention to either of feature set or label set. Second, RLEFS reconstructs the label space to obtain numerical labels by a label enhancement regularization term during mining semantic similarity structure process. Therefore, RLEFS can better reflect the importance of labels in real-world applications. Furthermore, the local and global structures are considered to ensure RLEFS can capture effective information as much as possible during feature selection process. To verify the effectiveness of RLFES, we conduct numerous experiments on ten multi-label data sets. Besides, RLEFS is compared to six classical and state-of-the-art feature selection methods (PPT+MI, PPT+CHI, MIFS, MDMR, LRFS and RALM-FS). By analyzing these experimental results, we conduct that the proposed RLEFS method outperforms other compared methods. 
+In future work, multi-label feature selection is still our main research direction. However, we will furthermore study personalized multi-label feature selection under non-convex optimization due to its broad prospects. 
+Acknowledgments
+This work is funded by: Postdoctoral Innovative Talents Support Program under Grant No. BX20190137, and National Key R\&D Plan of China under Grant No. 2017YFA0604500, and by National Sci-Tech Support Plan of China under Grant No. 2014BAH02F00, and by National Natural Science Foundation of China under Grant No. 61701190, and by Youth Science Foundation of Jilin Province of China under Grant No. 20160520011JH \& 20180520021JH, and by Youth Sci-Tech Innovation Leader and Team Project of Jilin Province of China under Grant No. 20170519017JH, and by Key Technology Innovation Cooperation Project of Government and University for the whole Industry Demonstration under Grant No. SXGJSF2017-4, and by Key scientific and technological R\&D Plan of Jilin Province of China under Grant No. 20180201103GX, Project of Jilin Province Development and Reform Commission No. 2019FGWTZC001.
